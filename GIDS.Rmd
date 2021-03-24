@@ -1,0 +1,41 @@
+---
+title: "GIDS"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+library(tidyverse)
+library(here)
+library(readxl)
+```
+
+```{r}
+sales_history <- read_xlsx(here("data", "sales_history.xlsx"))
+tracker <- read_xlsx(here("data", "tracker.xlsx"))
+```
+
+
+```{r}
+sales_numeric <- sales_history %>%
+  select(which(sapply(., is.numeric))) %>%
+  drop_na()
+```
+
+```{r}
+sales_clusters <- kmeans(sales_numeric, 5)
+```
+
+```{r}
+sales_numeric %>%
+  add_column(cluster = sales_clusters$cluster) %>%
+  ggplot(., aes(x = units, y = dollars, color = cluster)) +
+  geom_hex()
+```
+
+
