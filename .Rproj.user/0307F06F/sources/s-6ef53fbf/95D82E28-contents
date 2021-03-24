@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(readxl)
+library(factoextra)
 ```
 
 ```{r}
@@ -24,18 +25,22 @@ tracker <- read_xlsx(here("data", "tracker.xlsx"))
 ```{r}
 sales_numeric <- sales_history %>%
   select(which(sapply(., is.numeric))) %>%
+  select(!zip) %>%
   drop_na()
 ```
 
 ```{r}
-sales_clusters <- kmeans(sales_numeric, 5)
+sales_clusters <- kmeans(sales_numeric, 3)
 ```
 
 ```{r}
-sales_numeric %>%
-  add_column(cluster = sales_clusters$cluster) %>%
-  ggplot(., aes(x = units, y = dollars, color = cluster)) +
-  geom_hex()
+
+fviz_cluster(sales_clusters, data = sales_numeric, geom = "point")
+
+# sales_numeric %>%
+#   add_column(cluster = sales_clusters$cluster) %>%
+#   ggplot(., aes(x = units, y = dollars, color = cluster)) +
+#   geom_hex()
 ```
 
 
